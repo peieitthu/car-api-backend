@@ -1,0 +1,35 @@
+services:
+
+  php-fpm:
+    # For the php-fpm service, we will create a custom image to install the necessary PHP extensions and setup proper permissions.
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    env_file:
+      - .env
+    networks:
+      - laravel
+    depends_on:
+      mysql:
+        condition: service_started
+
+  mysql:
+    image: mysql:8.4.7
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=frontiir
+      - MYSQL_USER=frontiir
+      - MYSQL_PASSWORD=frontiir
+      - MYSQL_DATABASE=api
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - laravel
+networks:
+  laravel:
+volumes:
+  mysql-data:
